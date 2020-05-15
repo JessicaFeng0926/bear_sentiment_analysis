@@ -304,6 +304,13 @@ def cut_words(filepath:str)->str:
                 if not word:
                     break
                 stopwords.add(word)
+    # 经测试，下面的这些词虽然在停用词表里，但是ROSTCM6给它们的打分是明确的正/负，
+    # 所以要把它们从停用词里回收
+    recycle = {'为什么','难道','不大','不对','嘿嘿','哈哈','好',
+               '恰好','好在','多亏','慢','快'}
+    stopwords -= recycle
+    
+    stopwords = stopwords | {'多士炉','懒人'}
                 
     # 构造出新文件的路径
     new_filepath = os.path.join(basedir,'data')
@@ -313,10 +320,17 @@ def cut_words(filepath:str)->str:
     count_stopwords = 0
     count_validwords = 0
     
+    # 自定义几个需要当成整体分的词
+    jieba.add_word('多士炉',freq=10000)
+    jieba.add_word('培根',freq=10000)
+    jieba.add_word('肉串',freq=10000)
+    jieba.add_word('不满意',freq=10000)
+    jieba.add_word('慢',freq=10000)
+    
     # 对每个句子都用jieba分词，过滤掉停用词，有效的词写入新文件
-    with open(new_filepath,'a',encoding='utf-8') as f:
+    with open(new_filepath,'a',encoding='ansi') as f:
         for index,sentence in column.iteritems():
-            words = jieba.cut(sentence)
+            words = jieba.cut(sentence,HMM=False)
             for word in words:
                 if word not in stopwords:
                     f.write(word+'\n')
