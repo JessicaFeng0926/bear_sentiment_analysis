@@ -118,4 +118,4 @@
 - seaborn0.10.0
 - matplotlib3.1.3
 
-#### <font color="#1C86EE">有问题欢迎交流讨论</font>
+#### -*-有问题欢迎交流讨论-*-
